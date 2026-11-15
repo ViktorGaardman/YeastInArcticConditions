@@ -121,13 +121,11 @@ df_attractant <- df_attractant %>%
 
 #plot capture rate per species. Not enough species-specific data for analysis
 
-species_boxplot <- ggplot(df_attractant, aes(x = TrapType, y = CountPerHour, color=
-                                    Family)) +
+species_boxplot <- ggplot(df_attractant, aes(x = TrapType, y = CountPerHour)) +
   facet_wrap(~ Species, scales = "free_y") +
   geom_boxplot(position = position_dodge(width = 0.75)) +
   geom_point(position = position_dodge(width = 0.75)) +
   theme_classic()+
-  scale_color_manual(values = c("#4590ba", "#b87f00")) +
   ylab("Individuals per hour")+
   theme(
     axis.text.y = element_text(size = 12),
@@ -181,24 +179,24 @@ plot_pred <- as.data.frame(emmeans(attractant_mod, ~ TrapType | Family,
                                    type = "response", adjust = "none"))
 
 predicted_attractant <- ggplot() +
-  geom_jitter(data = df_attractant_fam, aes(x = TrapType, y = SumCountPerHour, color = Family), alpha = 0.5,
+  geom_jitter(data = df_attractant_fam, aes(x = TrapType, y = SumCountPerHour), alpha = 0.5,
               width = 0.1) +
   geom_errorbar(
     data = plot_pred,
     aes(
       x = TrapType,
       ymin = asymp.LCL,
-      ymax = asymp.UCL,
-      color = Family
+      ymax = asymp.UCL
     ),
     width = 0.2,
-    linewidth = 1
+    linewidth = 1,
+alpha = 0.7
   ) +
-  geom_point(data = plot_pred, aes(x = TrapType, y = response, color = Family), size = 4) +
+  geom_point(data = plot_pred, aes(x = TrapType, y = response),
+alpha = 0.9, size = 4) +
   theme_classic() +
   ylab("Individuals per hour") +
   facet_wrap(~ Family, scales = "free_y") +
-  scale_color_manual(values = c("#4590ba", "#b87f00")) +
   theme(
     axis.text.y = element_text(size = 12),
     axis.text.x = element_text(size = 14),
@@ -280,32 +278,30 @@ comp_df <- comp_df %>%
 
 
 predicted_comp_sp <- ggplot() +
-  geom_jitter(data = comp_df, aes(x = TrapType, y = CountPerHour, color = TrapType), alpha = 0.5,
+  geom_jitter(data = comp_df, aes(x = TrapType, y = CountPerHour), alpha = 0.5,
               width = 0.1) +
   geom_errorbar(
     data = plot_pred_comp_sp,
     aes(
       x = TrapType,
       ymin = asymp.LCL,
-      ymax = asymp.UCL,
-      color = TrapType
+      ymax = asymp.UCL
     ),
     width = 0.2,
-    linewidth = 1
+    linewidth = 1,
+alpha = 0.7
   ) +
-  geom_point(data = plot_pred_comp_sp, aes(x = TrapType, y = response, color = TrapType), size = 4) +
+  geom_point(data = plot_pred_comp_sp, aes(x = TrapType, y = response), alpha = 0.9, size = 4) +
   theme_classic() +
   ylab("Individuals per hour") +
   facet_wrap(~ Species, scales = "free_y") +
-  scale_color_manual(values = c("#4590ba", "#b87f00")) +
   theme(
     axis.text.y = element_text(size = 12),
-    axis.text.x = element_blank(),
+    axis.text.x = element_text(size = 12),
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 14),
     legend.position = "none",
     strip.text = element_text(size = 14),
-    axis.ticks.x = element_blank()
   )
 
 #Repeat for taxonomic family
@@ -338,34 +334,32 @@ Fam_comp_pred <- as.data.frame(emmeans(Fam_comp_mod, ~ TrapType | Family,
                             type = "response", adjust = "none"))
 
 predicted_comp_fam <- ggplot() +
-  geom_jitter(data = Fam_df, aes(x = TrapType, y = Sum, color = TrapType), alpha = 0.5,
+  geom_jitter(data = Fam_df, aes(x = TrapType, y = Sum), alpha = 0.5,
               width = 0.1) +
   geom_errorbar(
     data = Fam_comp_pred,
     aes(
       x = TrapType,
       ymin = asymp.LCL,
-      ymax = asymp.UCL,
-      color = TrapType
+      ymax = asymp.UCL
     ),
     width = 0.2,
-    linewidth = 1
+    linewidth = 1,
+alpha = 0.7
   ) +
-  geom_point(data = Fam_comp_pred, aes(x = TrapType, y = response, color = TrapType), size = 4) +
+  geom_point(data = Fam_comp_pred, aes(x = TrapType, y = response), 
+alpha = 0.9, size = 4) +
   theme_classic() +
   ylab("Individuals per hour") +
   facet_wrap(~ Family, scales = "free_y") +
-  scale_color_manual(values = c("#4590ba", "#b87f00")) +
   theme(
     axis.text.y = element_text(size = 12),
-    axis.text.x = element_blank(),
+    axis.text.x = element_text(size = 12),
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 14),
     legend.title = element_blank(),
     legend.text = element_text(size = 14),
-    axis.ticks.x = element_blank(),
-    strip.text = element_text(size = 14),
-    legend.position = c(0.95, 0.8)
+    strip.text = element_text(size = 14)
   )
 
 predicted_comp_fam
@@ -374,5 +368,3 @@ comparison_plots <- predicted_comp_fam / predicted_comp_sp
 
 comparison_plots <- comparison_plots + plot_annotation(tag_levels = "A") + plot_layout(heights = c(1,2))
 
-ggsave(comparison_plots, filename = "Fig4_CO2.TIFF", dpi = 450,
-       height = 10.56, width = 10)
